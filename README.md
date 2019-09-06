@@ -36,3 +36,17 @@ This is an implementation of [Udemy tutorial](https://www.udemy.com/grpc-golang/
 1. Run greet client:
 
         $ go run greet/greet_client/client.go
+
+### Calculator example
+
+1. Compile `.proto` file to `.go` file:
+
+        $ protoc calculator/calculatorpb/calculator.proto --go_out=plugins=grpc:.
+
+1. Run greet server:
+
+        $ go run calculator/calculator_server/server.go
+
+1. Run greet client:
+
+        $ go run calculator/calculator_client/client.go
