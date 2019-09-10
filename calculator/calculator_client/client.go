@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"io"
 	"log"
 
 	"gRPC_course/calculator/calculatorpb"
@@ -22,6 +23,8 @@ func main() {
 	// fmt.Printf("Created client: %f", c)
 
 	doUnary(c)
+
+	doServerStreaming(c)
 }
 
 func doUnary(c calculatorpb.CalculatorServiceClient) {
@@ -35,4 +38,25 @@ func doUnary(c calculatorpb.CalculatorServiceClient) {
 		log.Fatalf("error while calling Sum RPC: %v", err)
 	}
 	log.Printf("Response from Sum: %v", res.SumResult)
+}
+
+func doServerStreaming(c calculatorpb.CalculatorServiceClient) {
+	fmt.Println("Starting a Prime Decomposition Server Streaming RPC...")
+	req := &calculatorpb.PrimeNumberDecompositionRequest{
+		Number: 12390392840,
+	}
+	stream, err := c.PrimeNumberDecomposition(context.Background(), req)
+	if err != nil {
+		log.Fatalf("error while calling PrimeNumberDecomposition RPC: %v", err)
+	}
+	for {
+		res, err := stream.Recv()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			log.Fatalf("Error receieving msg: %v", err)
+		}
+		fmt.Println(res.GetPrimeFactor())
+	}
 }
