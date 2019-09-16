@@ -97,7 +97,7 @@ func doClientStreaming(c greetpb.GreetServiceClient) {
 	if err != nil {
 		log.Fatalf("Error while calling LongGreet: %v", err)
 	}
-	for _, req := range(requests) {
+	for _, req := range requests {
 		fmt.Printf("Sending req: %v\n", req)
 		err := stream.Send(req)
 		if err != nil {
