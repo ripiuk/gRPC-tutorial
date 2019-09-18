@@ -3,10 +3,9 @@ package main
 import (
 	"context"
 	"fmt"
+	"gRPC_course/calculator/calculatorpb"
 	"io"
 	"log"
-
-	"gRPC_course/calculator/calculatorpb"
 
 	"google.golang.org/grpc"
 )
@@ -27,6 +26,8 @@ func main() {
 	doServerStreaming(c)
 
 	doClientStreaming(c)
+
+	doBiDirectionalStreaming(c)
 }
 
 func doUnary(c calculatorpb.CalculatorServiceClient) {
@@ -82,4 +83,46 @@ func doClientStreaming(c calculatorpb.CalculatorServiceClient) {
 		log.Fatalf("Error receiving response from ComputeAverage: %v", err)
 	}
 	fmt.Printf("ComputeAverage response: %v", res)
+}
+
+func doBiDirectionalStreaming(c calculatorpb.CalculatorServiceClient) {
+	fmt.Println("Starting a Max number BiDi Streaming RPC...")
+
+	stream, err := c.FindMaximum(context.Background())
+	if err != nil {
+		log.Fatalf("Could not create sream: %v", err)
+	}
+
+	numbers := []int32{1,5,3,6,2,20}
+	waitch := make(chan struct{})
+
+	go func() {
+		for _, number := range numbers {
+			fmt.Printf("Sending message: %v\n", number)
+			err := stream.Send(&calculatorpb.FindMaximumRequest{Number: number})
+			if err != nil {
+				log.Fatalf("Error sending request: %v", err)
+			}
+		}
+		err := stream.CloseSend()
+		if err != nil {
+			log.Fatalf("Could not close the sream: %v", err)
+		}
+	}()
+
+	go func() {
+		for {
+			res, err := stream.Recv()
+			if err == io.EOF {
+				break
+			}
+			if err != nil {
+				log.Fatalf("Error while receieving data from server: %v", err)
+			}
+			fmt.Printf("Received: %v\n", res.GetMax())
+		}
+		close(waitch)
+	}()
+
+	<- waitch
 }
