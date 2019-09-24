@@ -50,3 +50,17 @@ This is an implementation of [Udemy tutorial](https://www.udemy.com/grpc-golang/
 1. Run greet client:
 
         $ go run calculator/calculator_client/client.go
+
+### SSL certificate
+
+1. Install openssl:
+
+        $ sudo apt-get install openssl
+
+2. Create needed certificates, keys:
+
+        $ cd ssl
+        $ chmod +x ./generate_files.sh
+        $ ./generate_files.sh
+
+    if you got `Cannot open file .rnd` error - create an empty `.rnd` file
