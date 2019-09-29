@@ -64,3 +64,46 @@ This is an implementation of [Udemy tutorial](https://www.udemy.com/grpc-golang/
         $ ./generate_files.sh
 
     if you got `Cannot open file .rnd` error - create an empty `.rnd` file
+
+### Blog example
+
+1. Install MongoDB:
+
+    * Download and install MongoDB from [here](https://www.mongodb.com/download-center/community)
+
+    * Create folder to store data:
+
+            $ mkdir ~/mongodata
+            $ mkdir ~/mongodata/db
+
+    * Run MongoDB:
+
+            $ /usr/bin/mongod --dbpath ~/mongodata/db
+
+1. Install UI for your MongoDB:
+
+    * Download Robo 3T from [here](https://robomongo.org/download)
+
+    * Switch to download directory and run these commands:
+
+            $ tar -xvzf robo3t*.tar.gz
+            $ sudo mkdir /usr/local/bin/robomongo
+            $ sudo mv robo3t*/* /usr/local/bin/robomongo
+            $ cd /usr/local/bin/robomongo/bin
+            $ sudo chmod +x robo3t
+
+    * Open .bashrc file:
+
+            $ sudo vim ~/.bashrc
+
+      And add the following line to the end of the file:
+
+            alias robomongo='/usr/local/bin/robomongo/bin/robo3t'
+
+    * Reload it using the following command:
+
+            $ source ~/.bashrc
+
+    * Run robomongo from your terminal:
+
+            $ robomongo
