@@ -107,3 +107,21 @@ This is an implementation of [Udemy tutorial](https://www.udemy.com/grpc-golang/
     * Run robomongo from your terminal:
 
             $ robomongo
+
+1. Install MongoDB driver for Golang:
+
+        $ go get go.mongodb.org/mongo-driver/mongo
+
+##### Run Blog Example
+
+1. Compile `.proto` file to `.go` file:
+
+        $ protoc blog/blogpb/blog.proto --go_out=plugins=grpc:.
+
+1. Run greet server:
+
+        $ go run blog/blog_server/server.go
+
+1. Run greet client:
+
+        $ go run blog/blog_client/client.go
