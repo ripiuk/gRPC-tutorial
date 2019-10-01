@@ -13,6 +13,7 @@ import (
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -53,6 +54,30 @@ func (*server) CreateBlog(ctx context.Context, req *blogpb.CreateBlogRequest) (*
 			AuthorId: blog.GetAuthorId(),
 			Title: blog.GetTitle(),
 			Content: blog.GetContent(),
+		},
+	}, nil
+}
+
+func (*server) 	ReadBlog(ctx context.Context, req *blogpb.ReadBlogRequest) (*blogpb.ReadBlogResponse, error) {
+	fmt.Println("Read blog request received")
+
+	blogID := req.GetBlogId()
+	oid, err := primitive.ObjectIDFromHex(blogID)
+	if err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, fmt.Sprintf("Can not parce ID: %v", err))
+	}
+	data := &blogItem{}
+	filter := bson.D{{"_id", oid}}
+	res := collection.FindOne(context.Background(), filter)
+	if err := res.Decode(data); err != nil {
+		return nil, status.Errorf(codes.NotFound, fmt.Sprintf("Cannot find blog with specified ID: %v", err))
+	}
+	return &blogpb.ReadBlogResponse{
+		Blog: &blogpb.Blog{
+			Id: data.ID.Hex(),
+			AuthorId: data.AuthorID,
+			Title: data.Title,
+			Content: data.Content,
 		},
 	}, nil
 }
