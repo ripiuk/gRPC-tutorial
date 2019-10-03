@@ -117,6 +117,25 @@ func (*server) UpdateBlog(ctx context.Context, req *blogpb.UpdateBlogRequest) (*
 	return &blogpb.UpdateBlogResponse{Blog: dataToBlogPb(data)}, nil
 }
 
+func (*server) DeleteBlog(ctx context.Context, req *blogpb.DeleteBlogRequest) (*blogpb.DeleteBlogResponse, error) {
+	fmt.Println("Delete blog request received")
+
+	oid, err := primitive.ObjectIDFromHex(req.GetBlogId())
+	if err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, fmt.Sprintf("Can not parce ID: %v", err))
+	}
+
+	filter := bson.D{{"_id", oid}}
+	res, delErr := collection.DeleteOne(context.Background(), filter)
+	if delErr != nil {
+		return nil, status.Errorf(codes.Internal, fmt.Sprintf("Can not delete object in DB: %v", delErr))
+	}
+	if res.DeletedCount == 0 {
+		return nil, status.Errorf(codes.NotFound, fmt.Sprintf("Can find object in DB: %v", delErr))
+	}
+
+	return &blogpb.DeleteBlogResponse{BlogId: req.GetBlogId()}, nil
+}
 
 func main() {
 	// get file name and line number if crash
