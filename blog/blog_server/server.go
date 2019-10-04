@@ -137,6 +137,31 @@ func (*server) DeleteBlog(ctx context.Context, req *blogpb.DeleteBlogRequest) (*
 	return &blogpb.DeleteBlogResponse{BlogId: req.GetBlogId()}, nil
 }
 
+func (*server) ListBlog(req *blogpb.ListBlogRequest, stream blogpb.BlogService_ListBlogServer) error {
+	fmt.Println("List blog request received")
+
+	curr, err := collection.Find(context.Background(), bson.M{})
+	if err != nil {
+		return status.Errorf(codes.Internal, fmt.Sprintf("Unknown internal error while searching: %v", err))
+	}
+	defer curr.Close(context.Background())
+	for curr.Next(context.Background()) {
+		data := &blogItem{}
+		err := curr.Decode(data)
+		if err != nil {
+			return status.Errorf(codes.Internal, fmt.Sprintf("Error while decoding data from DB: %v", err))
+		}
+		streamErr := stream.Send(&blogpb.LisBlogResponse{Blog: dataToBlogPb(data)})
+		if streamErr != nil {
+			log.Fatalf("Can not send the data to the client: %v", streamErr)
+		}
+	}
+	if err := curr.Err(); err != nil {
+		return status.Errorf(codes.Internal, fmt.Sprintf("Unknown internal error: %v", err))
+	}
+	return nil
+}
+
 func main() {
 	// get file name and line number if crash
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
