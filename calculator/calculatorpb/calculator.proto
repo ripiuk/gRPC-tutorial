@@ -3,6 +3,8 @@ syntax = "proto3";
 package calculator;
 option go_package = "calculatorpb";
 
+import "google/api/annotations.proto";
+
 message SumRequest {
     int32 first_number = 1;
     int32 second_number = 2;
@@ -45,7 +47,13 @@ message SquareRootResponse {
 }
 
 service CalculatorService {
-    rpc Sum(SumRequest) returns (SumResponse) {};
+    rpc Sum(SumRequest) returns (SumResponse) {
+        option (google.api.http) = {
+            post: "/sum"
+            body: "*"
+        };
+    };
+
     rpc PrimeNumberDecomposition(PrimeNumberDecompositionRequest) returns (stream PrimeNumberDecompositionResponse) {};
     rpc ComputeAverage(stream ComputeAverageRequest) returns (ComputeAverageResponse) {};
     rpc FindMaximum(stream FindMaximumRequest) returns (stream FindMaximumResponse) {};

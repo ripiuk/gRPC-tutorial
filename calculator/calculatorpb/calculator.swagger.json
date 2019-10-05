@@ -1,0 +1,168 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "calculator/calculatorpb/calculator.proto",
+    "version": "version not set"
+  },
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/sum": {
+      "post": {
+        "operationId": "Sum",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/calculatorSumResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/calculatorSumRequest"
+            }
+          }
+        ],
+        "tags": [
+          "CalculatorService"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "calculatorComputeAverageResponse": {
+      "type": "object",
+      "properties": {
+        "average": {
+          "type": "number",
+          "format": "double"
+        }
+      }
+    },
+    "calculatorFindMaximumResponse": {
+      "type": "object",
+      "properties": {
+        "max": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "calculatorPrimeNumberDecompositionResponse": {
+      "type": "object",
+      "properties": {
+        "prime_factor": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "calculatorSquareRootResponse": {
+      "type": "object",
+      "properties": {
+        "number_root": {
+          "type": "number",
+          "format": "double"
+        }
+      }
+    },
+    "calculatorSumRequest": {
+      "type": "object",
+      "properties": {
+        "first_number": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "second_number": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "calculatorSumResponse": {
+      "type": "object",
+      "properties": {
+        "sum_result": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "type_url": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string",
+          "format": "byte"
+        }
+      }
+    },
+    "runtimeStreamError": {
+      "type": "object",
+      "properties": {
+        "grpc_code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "http_code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "http_status": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    }
+  },
+  "x-stream-definitions": {
+    "calculatorFindMaximumResponse": {
+      "type": "object",
+      "properties": {
+        "result": {
+          "$ref": "#/definitions/calculatorFindMaximumResponse"
+        },
+        "error": {
+          "$ref": "#/definitions/runtimeStreamError"
+        }
+      },
+      "title": "Stream result of calculatorFindMaximumResponse"
+    },
+    "calculatorPrimeNumberDecompositionResponse": {
+      "type": "object",
+      "properties": {
+        "result": {
+          "$ref": "#/definitions/calculatorPrimeNumberDecompositionResponse"
+        },
+        "error": {
+          "$ref": "#/definitions/runtimeStreamError"
+        }
+      },
+      "title": "Stream result of calculatorPrimeNumberDecompositionResponse"
+    }
+  }
+}

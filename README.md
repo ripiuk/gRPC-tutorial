@@ -43,13 +43,63 @@ This is an implementation of [Udemy tutorial](https://www.udemy.com/grpc-golang/
 
         $ protoc calculator/calculatorpb/calculator.proto --go_out=plugins=grpc:.
 
-1. Run greet server:
+1. Run calculator server:
 
         $ go run calculator/calculator_server/server.go
 
-1. Run greet client:
+1. Run calculator client:
 
         $ go run calculator/calculator_client/client.go
+
+
+(Update) How to run `Sum` RPC via REST:
+
+1. Download the following packages:
+
+        $ go get -u github.com/grpc-ecosystem/grpc-gateway/protoc-gen-grpc-gateway
+        $ go get -u github.com/grpc-ecosystem/grpc-gateway/protoc-gen-swagger
+
+1. Compile `.proto` file to `.go` file:
+
+        $ protoc -I/usr/local/include -I. \
+            -I$GOPATH/src \
+            -I$GOPATH/src/github.com/grpc-ecosystem/grpc-gateway/third_party/googleapis \
+            --go_out=plugins=grpc:. \
+            calculator/calculatorpb/calculator.proto
+
+1. Generate reverse-proxy using `protoc-gen-grpc-gateway`:
+
+        $ protoc -I/usr/local/include -I. \
+            -I$GOPATH/src \
+            -I$GOPATH/src/github.com/grpc-ecosystem/grpc-gateway/third_party/googleapis \
+            --grpc-gateway_out=logtostderr=true:. \
+            calculator/calculatorpb/calculator.proto
+    
+    It will generate `calculator/calculatorpb/calculator.pb.gw.go` file
+
+1. (Optional) Generate swagger definitions using `protoc-gen-swagger`:
+
+        $ protoc -I/usr/local/include -I. \
+            -I$GOPATH/src \
+            -I$GOPATH/src/github.com/grpc-ecosystem/grpc-gateway/third_party/googleapis \
+            --swagger_out=logtostderr=true:. \
+            calculator/calculatorpb/calculator.proto
+
+    It will generate `calculator/calculatorpb/calculator.swagger.json` file
+
+1. Run calculator server:
+
+        $ go run calculator/calculator_server/server.go
+
+1. Run calculator gateway:
+
+        $ go run calculator/calculator_server/gateway.go
+
+1. Send message via `curl`:
+
+        $ curl -X POST -k http://127.0.0.1:8081/sum -d '{"first_number": 5, "second_number": 3}'
+
+    And you will get response `{"sum_result":8}` as result
 
 ### SSL certificate
 
@@ -118,10 +168,10 @@ This is an implementation of [Udemy tutorial](https://www.udemy.com/grpc-golang/
 
         $ protoc blog/blogpb/blog.proto --go_out=plugins=grpc:.
 
-1. Run greet server:
+1. Run blog server:
 
         $ go run blog/blog_server/server.go
 
-1. Run greet client:
+1. Run blog client:
 
         $ go run blog/blog_client/client.go
